@@ -16,6 +16,27 @@
 
 	let interval: ReturnType<typeof setInterval> | undefined;
 
+	// Google Analytics tracking functions
+	function trackPresaveClick() {
+		if (typeof window !== 'undefined' && (window as any).gtag) {
+			(window as any).gtag('event', 'click', {
+				event_category: 'engagement',
+				event_label: 'presave_button',
+				value: 1
+			});
+		}
+	}
+
+	function trackSocialClick(platform: string, url: string) {
+		if (typeof window !== 'undefined' && (window as any).gtag) {
+			(window as any).gtag('event', 'click', {
+				event_category: 'social_media',
+				event_label: platform.toLowerCase(),
+				value: 1
+			});
+		}
+	}
+
 	function updateCountdown() {
 		const now = new Date();
 		const diff = targetDate.getTime() - now.getTime();
@@ -161,6 +182,7 @@
 				rel="noopener noreferrer"
 				class="mt-2 rounded-full px-8 py-3 text-lg font-extralight tracking-[3px] text-white uppercase underline transition-all hover:scale-105"
 				in:fly={{ y: 30, duration: 800, delay: 1200, easing: quintOut }}
+				onclick={trackPresaveClick}
 			>
 				presave now
 			</a>
@@ -182,6 +204,7 @@
 						delay: 1400 + i * 100,
 						easing: elasticOut
 					}}
+					onclick={() => trackSocialClick(social.label, social.href)}
 				>
 					<svg
 						class="h-10 w-10 fill-white transition-all duration-300 {social.hoverColor} hover:scale-110"
