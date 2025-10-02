@@ -22,7 +22,7 @@ git add .
 git commit -m "Initial commit - Maybon countdown site"
 
 # Add GitHub repository as remote (replace YOUR_USERNAME)
-git remote add origin https://github.com/YOUR_USERNAME/maybon.git
+git remote add origin https://github.com/EivindHacker/Maybon-Homepage.git
 
 # Push to main branch
 git push -u origin main
@@ -39,7 +39,8 @@ git push -u origin main
 
 Log into your one.com control panel and set up these DNS records:
 
-#### For maybonmusic.com (root domain):
+#### For maybonmusic.com (root domain)
+
 ```
 Type: A
 Name: @ (or leave blank)
@@ -62,11 +63,12 @@ Value: 185.199.111.153
 TTL: 3600
 ```
 
-#### For www.maybonmusic.com (subdomain):
+#### For <www.maybonmusic.com> (subdomain)
+
 ```
 Type: CNAME
 Name: www
-Value: YOUR_USERNAME.github.io
+Value: EivindHacker.github.io
 TTL: 3600
 ```
 
@@ -93,7 +95,7 @@ npm run preview
 ## 🌐 DNS Propagation
 
 - DNS changes can take 24-48 hours to propagate globally
-- You can check propagation status at: https://dnschecker.org
+- You can check propagation status at: <https://dnschecker.org>
 - Your site will be available at:
   - `https://maybonmusic.com`
   - `https://www.maybonmusic.com`
@@ -119,23 +121,27 @@ maybon/
 ## 🎯 Automatic Deployment
 
 Every time you push to the `main` branch:
+
 1. GitHub Actions builds your site
 2. Deploys to GitHub Pages
 3. Updates live at maybonmusic.com
 
 ## 🐛 Troubleshooting
 
-### Site not loading:
+### Site not loading
+
 - Check DNS propagation
 - Verify CNAME file exists in `/static/`
 - Check GitHub Pages settings
 
-### Build errors:
+### Build errors
+
 - Run `npm run build` locally first
 - Check GitHub Actions logs
 - Ensure all dependencies are installed
 
-### Custom domain issues:
+### Custom domain issues
+
 - Verify DNS records at one.com
 - Wait for DNS propagation
 - Check GitHub Pages custom domain setting

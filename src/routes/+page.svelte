@@ -3,7 +3,7 @@
 	import { fade, fly, scale } from 'svelte/transition';
 	import { elasticOut, quintOut } from 'svelte/easing';
 
-	const targetDate = new Date('2025-10-24T00:00:00Z');
+	const targetDate = new Date('2025-02-14T00:00:00Z');
 	const loadingTexts = [
 		'"I ain\'t got time for this shit..."',
 		'"Another f***ing loading screen..."'
