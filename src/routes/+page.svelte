@@ -10,11 +10,9 @@
 	];
 
 	let timeLeft = $state({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-	let videoLoaded = $state(false);
+	let bgLoaded = $state(false);
 	let contentVisible = $state(false);
 	let randomLoadingText = $state('');
-	let loadedVideo: HTMLVideoElement;
-	let hiddenVideo: HTMLVideoElement;
 
 	let interval: ReturnType<typeof setInterval> | undefined;
 
@@ -57,47 +55,21 @@
 		timeLeft = { days, hours, minutes, seconds };
 	}
 
-	function handleVideoLoad() {
-		console.log('Video loaded!');
-		videoLoaded = true;
-		
-		// Try to play the hidden video first
-		if (hiddenVideo) {
-			tryPlayVideo(hiddenVideo);
-		}
-		
+	function handleBgLoad() {
+		console.log('Background GIF loaded!');
+		bgLoaded = true;
 		// Delay content appearance for smooth transition
 		setTimeout(() => {
 			contentVisible = true;
-			// Try to play the visible video too
-			if (loadedVideo) {
-				tryPlayVideo(loadedVideo);
-			}
 		}, 300);
 	}
 
-	function tryPlayVideo(videoElement: HTMLVideoElement) {
-		// Attempt to play video programmatically
-		const playPromise = videoElement.play();
-		
-		if (playPromise !== undefined) {
-			playPromise
-				.then(() => {
-					console.log('Video autoplay successful');
-				})
-				.catch((error) => {
-					console.log('Video autoplay failed, but that\'s ok on mobile:', error);
-					// Video will remain muted and loop, just won't autoplay
-				});
-		}
-	}
-
-	// Fallback timeout in case video never loads
+	// Fallback timeout in case background never loads
 	function startFallbackTimer() {
 		setTimeout(() => {
-			if (!videoLoaded) {
-				console.log('Video loading timeout, showing content anyway');
-				videoLoaded = true;
+			if (!bgLoaded) {
+				console.log('Background loading timeout, showing content anyway');
+				bgLoaded = true;
 				setTimeout(() => {
 					contentVisible = true;
 				}, 300);
@@ -121,7 +93,7 @@
 <!-- Main container to prevent any scrolling -->
 <div class="fixed inset-0 h-[100dvh] w-screen overflow-hidden">
 	<!-- Loading Screen -->
-	{#if !videoLoaded}
+	{#if !bgLoaded}
 		<div
 			class="absolute inset-0 z-50 flex items-center justify-center bg-black"
 			in:fade={{ duration: 0 }}
@@ -144,38 +116,14 @@
 		</div>
 	{/if}
 
-	<!-- Video Background -->
-	{#if videoLoaded}
-		<video
-			class="absolute h-[100dvh] w-full origin-center scale-110 object-cover brightness-90 saturate-[1.25]"
-			src="/img/canvas.MP4"
-			autoplay
-			muted
-			loop
-			playsinline
-			controls={false}
-			disablepictureinpicture
-			controlslist="nodownload nofullscreen noremoteplayback"
-			bind:this={loadedVideo}
-			in:fade={{ duration: 1200, easing: quintOut }}
-		></video>
-	{:else}
-		<video
-			class="absolute h-[100dvh] w-full origin-center scale-110 object-cover opacity-0 brightness-90 saturate-[1.25]"
-			src="/img/canvas.MP4"
-			autoplay
-			muted
-			loop
-			playsinline
-			controls={false}
-			disablepictureinpicture
-			controlslist="nodownload nofullscreen noremoteplayback"
-			onloadeddata={handleVideoLoad}
-			oncanplay={handleVideoLoad}
-			onloadedmetadata={handleVideoLoad}
-			bind:this={hiddenVideo}
-		></video>
-	{/if}
+	<!-- Background GIF -->
+	<img
+		src="/img/bg.gif"
+		alt="Background Animation"
+		class="absolute h-[100dvh] w-full origin-center scale-110 object-cover brightness-90 saturate-[1.25]"
+		onload={handleBgLoad}
+		in:fade={{ duration: 1200, easing: quintOut }}
+	/>
 
 	<!-- Content Layer -->
 	{#if contentVisible}
@@ -254,35 +202,3 @@
 	{/if}
 </div>
 
-<style>
-	/* Hide video controls completely */
-	video::-webkit-media-controls {
-		display: none !important;
-	}
-	
-	video::-webkit-media-controls-panel {
-		display: none !important;
-	}
-	
-	video::-webkit-media-controls-play-button {
-		display: none !important;
-	}
-	
-	video::-webkit-media-controls-start-playback-button {
-		display: none !important;
-	}
-	
-	/* For Firefox */
-	video::-moz-media-controls {
-		display: none !important;
-	}
-	
-	/* General fallback */
-	video {
-		outline: none;
-	}
-	
-	video:focus {
-		outline: none;
-	}
-</style>
