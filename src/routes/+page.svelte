@@ -13,6 +13,8 @@
 	let videoLoaded = $state(false);
 	let contentVisible = $state(false);
 	let randomLoadingText = $state('');
+	let loadedVideo: HTMLVideoElement;
+	let hiddenVideo: HTMLVideoElement;
 
 	let interval: ReturnType<typeof setInterval> | undefined;
 
@@ -58,10 +60,36 @@
 	function handleVideoLoad() {
 		console.log('Video loaded!');
 		videoLoaded = true;
+		
+		// Try to play the hidden video first
+		if (hiddenVideo) {
+			tryPlayVideo(hiddenVideo);
+		}
+		
 		// Delay content appearance for smooth transition
 		setTimeout(() => {
 			contentVisible = true;
+			// Try to play the visible video too
+			if (loadedVideo) {
+				tryPlayVideo(loadedVideo);
+			}
 		}, 300);
+	}
+
+	function tryPlayVideo(videoElement: HTMLVideoElement) {
+		// Attempt to play video programmatically
+		const playPromise = videoElement.play();
+		
+		if (playPromise !== undefined) {
+			playPromise
+				.then(() => {
+					console.log('Video autoplay successful');
+				})
+				.catch((error) => {
+					console.log('Video autoplay failed, but that\'s ok on mobile:', error);
+					// Video will remain muted and loop, just won't autoplay
+				});
+		}
 	}
 
 	// Fallback timeout in case video never loads
@@ -125,6 +153,10 @@
 			muted
 			loop
 			playsinline
+			controls={false}
+			disablepictureinpicture
+			controlslist="nodownload nofullscreen noremoteplayback"
+			bind:this={loadedVideo}
 			in:fade={{ duration: 1200, easing: quintOut }}
 		></video>
 	{:else}
@@ -135,9 +167,13 @@
 			muted
 			loop
 			playsinline
+			controls={false}
+			disablepictureinpicture
+			controlslist="nodownload nofullscreen noremoteplayback"
 			onloadeddata={handleVideoLoad}
 			oncanplay={handleVideoLoad}
 			onloadedmetadata={handleVideoLoad}
+			bind:this={hiddenVideo}
 		></video>
 	{/if}
 
@@ -217,3 +253,36 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	/* Hide video controls completely */
+	video::-webkit-media-controls {
+		display: none !important;
+	}
+	
+	video::-webkit-media-controls-panel {
+		display: none !important;
+	}
+	
+	video::-webkit-media-controls-play-button {
+		display: none !important;
+	}
+	
+	video::-webkit-media-controls-start-playback-button {
+		display: none !important;
+	}
+	
+	/* For Firefox */
+	video::-moz-media-controls {
+		display: none !important;
+	}
+	
+	/* General fallback */
+	video {
+		outline: none;
+	}
+	
+	video:focus {
+		outline: none;
+	}
+</style>
